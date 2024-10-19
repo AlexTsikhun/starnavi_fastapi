@@ -10,6 +10,7 @@ from comments.crud import (
     update_comment,
 )
 from dependencies import get_db
+from gemini import profanity_checker
 
 router = APIRouter()
 
@@ -18,6 +19,8 @@ router = APIRouter()
 def create_comment_endpoint(
     comment: schemas.CommentCreate, db: Session = Depends(get_db)
 ):
+    if profanity_checker(comment.content):
+        raise HTTPException(status_code=400, detail="The comment contains profanity")
     return create_comment(db, comment)
 
 
@@ -43,6 +46,8 @@ def update_comment_endpoint(
     db_comment = update_comment(db, comment_id, comment)
     if db_comment is None:
         raise HTTPException(status_code=404, detail="Comment not found")
+    if profanity_checker(comment.content):
+        raise HTTPException(status_code=400, detail="The comment contains profanity")
     return db_comment
 
 

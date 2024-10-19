@@ -13,4 +13,4 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 def profanity_checker(text):
     prompt = f"Оціни, чи даний текст містить ненормативну лексику: {text}. Відповідай числом, 1 - якщо вона є чи 0 якщо немає"
     response = model.generate_content(prompt)
-    return response.text
+    return int(response.text)
