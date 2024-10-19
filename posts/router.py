@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
 from dependencies import get_db
+from gemini import profanity_checker
 from posts import schemas
 from posts.crud import create_post, get_posts, get_post, update_post, delete_post
 
@@ -12,6 +13,8 @@ router = APIRouter()
 def create_post_endpoint(
     post: schemas.PostCreate, db: Session = Depends(get_db), user_id: int = 1
 ):
+    if profanity_checker(post.content):
+        raise HTTPException(status_code=400, detail="The post contains profanity")
     return create_post(db, post, user_id)
 
 
@@ -35,6 +38,8 @@ def update_post_endpoint(
     db_post = update_post(db, post_id, post)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
+    if profanity_checker(post.content):
+        raise HTTPException(status_code=400, detail="The post contains profanity")
     return db_post
 
 
