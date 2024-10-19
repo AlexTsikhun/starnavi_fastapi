@@ -13,4 +13,4 @@ class DBPost(Base):
     content = Column(String)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("DBUser", back_populates="posts")
-    # comments = relationship("Comment", back_populates="post")
+    comments = relationship("DBComment", back_populates="post")
