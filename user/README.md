@@ -1,1 +1,0 @@
-# starnavi_fastapi
