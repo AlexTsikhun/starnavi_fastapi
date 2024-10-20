@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class CommentCreate(BaseModel):
     content: str
     post_id: int
+    user_id: int
 
 
 class Comment(BaseModel):
@@ -13,3 +14,9 @@ class Comment(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CommentAnalytics(BaseModel):
+    date: str
+    total_comments: int
+    blocked_comments: int
