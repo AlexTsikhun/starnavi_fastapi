@@ -1,6 +1,9 @@
+from _datetime import datetime, timedelta
+
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
+from celery_app import auto_reply
 from comments import schemas
 from comments.crud import (
     create_comment,
@@ -13,7 +16,7 @@ from comments.models import DBComment
 from comments.schemas import CommentAnalytics
 from dependencies import get_db
 from gemini import profanity_checker
-from _datetime import datetime, timedelta
+from user.models import DBUser
 
 router = APIRouter()
 
@@ -24,7 +27,15 @@ def create_comment_endpoint(
 ):
     if profanity_checker(comment.content):
         raise HTTPException(status_code=400, detail="The comment contains profanity")
-    return create_comment(db, comment)
+
+    user = db.query(DBUser).filter(DBUser.id == comment.user_id).first()
+    new_comment = create_comment(db, comment)
+    if user and user.auto_reply_enabled:
+        auto_reply.apply_async(
+            (new_comment.id, comment.post_id, user.id), countdown=user.reply_delay
+        )
+
+    return new_comment
 
 
 @router.get("/comments/{comment_id}", response_model=schemas.Comment)
