@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from user import router as user_router
-from posts import router as posts_router
+
 from comments import router as comments_router
+from posts import router as posts_router
+from user import router as user_router
 
 app = FastAPI()
 

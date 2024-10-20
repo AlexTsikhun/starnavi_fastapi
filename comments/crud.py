@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
 
-from comments.models import DBComment
 from comments import schemas
-from posts.models import DBPost
-from posts.schemas import PostCreate
+from comments.models import DBComment
 
 
 def create_comment(db: Session, comment: schemas.CommentCreate):
