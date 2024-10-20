@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
+
 from database import Base
+from user.models import DBUser
 
 
 class DBComment(Base):
@@ -13,3 +16,6 @@ class DBComment(Base):
     post_id = Column(Integer, ForeignKey("posts.id"))
     post = relationship("DBPost", back_populates="comments")
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("DBUser", back_populates="comments")
