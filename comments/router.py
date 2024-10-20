@@ -9,8 +9,11 @@ from comments.crud import (
     delete_comment,
     update_comment,
 )
+from comments.models import DBComment
+from comments.schemas import CommentAnalytics
 from dependencies import get_db
 from gemini import profanity_checker
+from _datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -57,3 +60,43 @@ def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     if db_comment is None:
         raise HTTPException(status_code=404, detail="Comment not found")
     return db_comment
+
+
+@router.get("/api/comments-daily-breakdown")
+def comments_daily_breakdown(
+    date_from: str, date_to: str, db: Session = Depends(get_db)
+):
+    start_date = datetime.strptime(date_from, "%d-%m-%Y")
+    end_date = datetime.strptime(date_to, "%d-%m-%Y")
+
+    analytics = []
+    current_date = start_date
+    while current_date <= end_date:
+        total_comments = (
+            db.query(DBComment)
+            .filter(
+                DBComment.created_at >= current_date,
+                DBComment.created_at < current_date + timedelta(days=1),
+            )
+            .count()
+        )
+        blocked_comments = (
+            db.query(DBComment)
+            .filter(
+                DBComment.created_at >= current_date,
+                DBComment.created_at < current_date + timedelta(days=1),
+                # ??? filtration by is_blocked
+            )
+            .count()
+        )
+
+        analytics.append(
+            CommentAnalytics(
+                date=current_date.strftime("%Y-%m-%d"),
+                total_comments=total_comments,
+                blocked_comments=blocked_comments,
+            )
+        )
+        current_date += timedelta(days=1)
+
+    return analytics

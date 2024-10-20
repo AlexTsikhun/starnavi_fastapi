@@ -13,3 +13,9 @@ class Comment(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CommentAnalytics(BaseModel):
+    date: str
+    total_comments: int
+    blocked_comments: int
