@@ -23,16 +23,19 @@ router = APIRouter()
 
 
 @router.post("/comments/", response_model=schemas.Comment)
-def create_comment_endpoint(
-    comment: schemas.CommentCreate, db: Session = Depends(get_db), current_user: DBUser = Depends(get_current_user)
+async def create_comment_endpoint(
+    comment: schemas.CommentCreate,
+    db: Session = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user),
 ):
     new_comment = create_comment(db, comment, current_user.id)
     if new_comment.is_blocked:
         raise HTTPException(status_code=400, detail="The comment contains profanity")
 
     if current_user and current_user.auto_reply_enabled:
-        auto_reply.apply_async(
-            (new_comment.id, comment.post_id, current_user.id), countdown=current_user.reply_delay
+        await auto_reply.apply_async(
+            (new_comment.id, comment.post_id, current_user.id),
+            countdown=current_user.reply_delay,
         )
 
     return new_comment
@@ -53,9 +56,15 @@ def get_comments_endpoint(
     return get_comments(db, post_id, skip=skip, limit=limit)
 
 
-@router.put("/comments/{comment_id}", response_model=schemas.Comment)
+@router.put(
+    "/comments/{comment_id}",
+    response_model=schemas.Comment,
+    dependencies=[Depends(get_current_user)],
+)
 def update_comment_endpoint(
-    comment_id: int, comment: schemas.CommentCreate, db: Session = Depends(get_db)
+    comment_id: int,
+    comment: schemas.CommentCreate,
+    db: Session = Depends(get_db),
 ):
     db_comment = update_comment(db, comment_id, comment)
     if db_comment is None:
@@ -65,7 +74,11 @@ def update_comment_endpoint(
     return db_comment
 
 
-@router.delete("/comments/{comment_id}", response_model=schemas.Comment)
+@router.delete(
+    "/comments/{comment_id}",
+    response_model=schemas.Comment,
+    dependencies=[Depends(get_current_user)],
+)
 def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     db_comment = delete_comment(db, comment_id)
     if db_comment is None:
@@ -73,7 +86,10 @@ def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     return db_comment
 
 
-@router.get("/comments-daily-breakdown")
+@router.get(
+    "/comments-daily-breakdown",
+    dependencies=[Depends(get_current_user)],
+)
 def comments_daily_breakdown(
     date_from: str, date_to: str, db: Session = Depends(get_db)
 ):

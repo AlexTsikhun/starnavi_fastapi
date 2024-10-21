@@ -6,14 +6,15 @@ from dependencies import get_db
 from user import oauth2
 from user.crud import toggle_auto_reply
 from user.models import DBUser
-from user.schemas import UserCreate
+from user.oauth2 import get_current_user
+from user import schemas
 from user.utils import hash_password, verify
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.post("/register/")
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(DBUser).filter(DBUser.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="User already exists")
@@ -25,7 +26,7 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     return {"username": new_user.email}
 
 
-@router.post("/token/")
+@router.post("/token")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
