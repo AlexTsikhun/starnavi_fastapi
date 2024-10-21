@@ -26,3 +26,4 @@ celery -A celery_app worker --loglevel=info
 ```
 
 add prefix `api/`
+add change autoresponse
