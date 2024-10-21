@@ -12,7 +12,7 @@ from user.models import DBUser
 
 settings = Settings()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/user/token")
 
 
 SECRET_KEY = settings.secret_key

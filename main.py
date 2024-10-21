@@ -6,9 +6,9 @@ from user import router as user_router
 
 app = FastAPI()
 
-app.include_router(user_router.router)
-app.include_router(posts_router.router)
-app.include_router(comments_router.router)
+app.include_router(user_router.router, prefix="/api/v1")
+app.include_router(posts_router.router, prefix="/api/v1")
+app.include_router(comments_router.router, prefix="/api/v1")
 
 
 @app.get("/")
