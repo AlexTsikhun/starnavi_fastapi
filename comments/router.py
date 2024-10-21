@@ -17,22 +17,22 @@ from comments.schemas import CommentAnalytics
 from dependencies import get_db
 from gemini import profanity_checker
 from user.models import DBUser
+from user.oauth2 import get_current_user
 
 router = APIRouter()
 
 
 @router.post("/comments/", response_model=schemas.Comment)
 def create_comment_endpoint(
-    comment: schemas.CommentCreate, db: Session = Depends(get_db)
+    comment: schemas.CommentCreate, db: Session = Depends(get_db), current_user: DBUser = Depends(get_current_user)
 ):
-    user = db.query(DBUser).filter(DBUser.id == comment.user_id).first()
-    new_comment = create_comment(db, comment, user.id)
+    new_comment = create_comment(db, comment, current_user.id)
     if new_comment.is_blocked:
         raise HTTPException(status_code=400, detail="The comment contains profanity")
 
-    if user and user.auto_reply_enabled:
+    if current_user and current_user.auto_reply_enabled:
         auto_reply.apply_async(
-            (new_comment.id, comment.post_id, user.id), countdown=user.reply_delay
+            (new_comment.id, comment.post_id, current_user.id), countdown=current_user.reply_delay
         )
 
     return new_comment
