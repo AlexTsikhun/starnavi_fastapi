@@ -25,11 +25,11 @@ router = APIRouter()
 def create_comment_endpoint(
     comment: schemas.CommentCreate, db: Session = Depends(get_db)
 ):
-    if profanity_checker(comment.content):
+    user = db.query(DBUser).filter(DBUser.id == comment.user_id).first()
+    new_comment = create_comment(db, comment, user.id)
+    if new_comment.is_blocked:
         raise HTTPException(status_code=400, detail="The comment contains profanity")
 
-    user = db.query(DBUser).filter(DBUser.id == comment.user_id).first()
-    new_comment = create_comment(db, comment)
     if user and user.auto_reply_enabled:
         auto_reply.apply_async(
             (new_comment.id, comment.post_id, user.id), countdown=user.reply_delay
@@ -60,7 +60,7 @@ def update_comment_endpoint(
     db_comment = update_comment(db, comment_id, comment)
     if db_comment is None:
         raise HTTPException(status_code=404, detail="Comment not found")
-    if profanity_checker(comment.content):
+    if db_comment.is_blocked:
         raise HTTPException(status_code=400, detail="The comment contains profanity")
     return db_comment
 
@@ -73,7 +73,7 @@ def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     return db_comment
 
 
-@router.get("/api/comments-daily-breakdown")
+@router.get("/comments-daily-breakdown")
 def comments_daily_breakdown(
     date_from: str, date_to: str, db: Session = Depends(get_db)
 ):
@@ -96,7 +96,7 @@ def comments_daily_breakdown(
             .filter(
                 DBComment.created_at >= current_date,
                 DBComment.created_at < current_date + timedelta(days=1),
-                # ??? filtration by is_blocked
+                DBComment.is_blocked == 1,
             )
             .count()
         )

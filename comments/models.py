@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -19,3 +19,5 @@ class DBComment(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("DBUser", back_populates="comments")
+
+    is_blocked = Column(Boolean, default=False)
