@@ -1,16 +1,13 @@
 from unittest.mock import patch
 
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from dependencies import get_db
-from main import app  # Replace with the correct import for your FastAPI app
-from user.models import Base, DBUser
-
-import pytest
-
-from fastapi.testclient import TestClient
-
+from main import app
+from user.models import Base
 
 # Create a new database for testing
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_.db"

@@ -76,3 +76,27 @@ def test_update_auto_reply(client):
     assert response.status_code == 200
     assert response.json()["previous_state"] is True
     assert response.json()["new_state"] is False
+
+
+def test_update_reply_delay(client):
+    register_user(client)
+    login_response = login_user(client)
+    access_token = login_response.json()["access_token"]
+    payload = {"delay": 10}
+
+    response = client.put(
+        "/api/v1/user/reply-delay",
+        json=payload,
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Reply delay updated", "new_delay": 10}
+
+
+def test_update_reply_delay_unauthenticated(client):
+    payload = {"delay": 10}
+
+    response = client.put("/api/v1/user/reply-delay", json=payload)
+
+    assert response.status_code == 401
