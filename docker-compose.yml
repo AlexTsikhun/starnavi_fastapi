@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - my_media:/files/media
+    command: >
+      sh -c "alembic upgrade head &&
+            python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: celery -A celery_app worker --pool=solo --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - app
+volumes:
+  my_media:

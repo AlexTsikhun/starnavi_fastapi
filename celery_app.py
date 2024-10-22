@@ -5,7 +5,7 @@ from dependencies import get_db
 from gemini import gemini_auto_reply
 from posts.models import DBPost
 
-celery = Celery("tasks", broker="redis://localhost:6379/0")
+celery = Celery("tasks", broker="redis://redis:6379/0")
 
 
 @celery.task

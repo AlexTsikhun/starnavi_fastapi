@@ -23,7 +23,7 @@ router = APIRouter()
 
 
 @router.post("/comments/", response_model=schemas.Comment)
-async def create_comment_endpoint(
+def create_comment_endpoint(
     comment: schemas.CommentCreate,
     db: Session = Depends(get_db),
     current_user: DBUser = Depends(get_current_user),
@@ -33,7 +33,7 @@ async def create_comment_endpoint(
         raise HTTPException(status_code=400, detail="The comment contains profanity")
 
     if current_user and current_user.auto_reply_enabled:
-        await auto_reply.apply_async(
+        auto_reply.apply_async(
             (new_comment.id, comment.post_id, current_user.id),
             countdown=current_user.reply_delay,
         )
