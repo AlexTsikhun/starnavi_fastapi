@@ -9,6 +9,7 @@ Analytics on the number of comments added to posts over a certain period.
 - [Task](#task)
 - [Installation](#installation)
 - [Run with docker](#run-with-docker)
+- [Launch periodic task with Celery](#launch-periodic-task-with-celery)
 - [Getting access](#getting-access)
 - [Technologies Used](#technologies-used)
 - [Features](#features)
