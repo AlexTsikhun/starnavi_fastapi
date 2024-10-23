@@ -20,3 +20,8 @@ class CommentAnalytics(BaseModel):
     date: str
     total_comments: int
     blocked_comments: int
+
+
+class DeleteCommentResponse(BaseModel):
+    message: str
+    deleted_post: Comment

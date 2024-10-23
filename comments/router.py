@@ -76,14 +76,14 @@ def update_comment_endpoint(
 
 @router.delete(
     "/comments/{comment_id}",
-    response_model=schemas.Comment,
+    response_model=schemas.DeleteCommentResponse,
     dependencies=[Depends(get_current_user)],
 )
 def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     db_comment = delete_comment(db, comment_id)
     if db_comment is None:
         raise HTTPException(status_code=404, detail="Comment not found")
-    return db_comment
+    return {"message": "Comment deleted successfully", "deleted_post": db_comment}
 
 
 @router.get(
