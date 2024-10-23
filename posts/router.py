@@ -55,11 +55,11 @@ def update_post_endpoint(
 
 @router.delete(
     "/posts/{post_id}",
-    response_model=schemas.Post,
+    response_model=schemas.DeletePostResponse,
     dependencies=[Depends(get_current_user)],
 )
 def delete_post_endpoint(post_id: int, db: Session = Depends(get_db)):
     db_post = delete_post(db, post_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
-    return db_post
+    return {"message": "Post deleted successfully", "deleted_post": db_post}

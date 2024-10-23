@@ -58,3 +58,16 @@ async def update_auto_reply(
     )
 
     return response
+
+
+@router.put("/reply-delay")
+async def update_reply_delay(
+    request: schemas.UpdateReplyDelayRequest,
+    db: Session = Depends(get_db),
+    user: DBUser = Depends(get_current_user),
+):
+    user.reply_delay = request.delay
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"message": "Reply delay updated", "new_delay": user.reply_delay}

@@ -2,6 +2,7 @@
 
 A simple API for managing posts and comments with AI moderation and automated replies. 
 The API was developed using FastAPI and Pydantic. Perform basic social media actions.
+Analytics on the number of comments added to posts over a certain period.
 
 ## Table of Contents
 
@@ -60,6 +61,14 @@ docker compose build
 docker compose up
 ```
 
+Gemini APi not allowed in Ukraine, so I used VPN. Run OpenVNP:
+
+```
+sudo openvpn vpnbook-us16-tcp443.ovpn
+# username - vpnbook
+# pass- b6xnvt9 
+```
+
 ## Getting access
 
 - Create user via `api/v1/user/register/`
@@ -92,7 +101,6 @@ celery -A celery_app flower --port=5555
 - JWT authenticated
 - Documentation is located at `docs`
 - Managing Posts and Comments
-- Filtering followers, following
 - Pagination for Posts
 
 ### General Features
@@ -105,9 +113,11 @@ User Registration and Authentication:
 
 - Users can log out and invalidate their token.
 
-Post Creation and Retrieval:
+Post/Comment Creation and Retrieval:
 
-- Users can create new posts with text content 
+- Users can create new posts/comment with text content (if the text contains profanity - blocking)
+
+- Analytics on the number of comments added to posts over a certain period.
 
 Schedule Post creation using Celery:
 
@@ -143,25 +153,54 @@ Technical Requirements:
 
 A list of some of the main-simples endpoints (for more, use documentation):
 
-Current user profile:
+registration:
 
-![my_profile.png](images/my-profile.png)
+![registration.png](images/registration.png)
 
-Another user profile view:
+Not authenticated:
 
-![my_profile.png](images/profile-detail.png)
+![not_authenticated_attempt.png](images/not_authenticated_attempt.png)
 
-All post list:
+login_get_token:
 
-![post_list.png](images/post-list.png)
+![login_get_token.png](images/login_get_token.png)
 
-Post detail:
+me:
 
-![post_detail.png](images/post-detail.png)
+![me.png](images/me.png)
 
-My comment list:
+post_creation:
 
-![my-comment-list.png](images/my-comment-list.png)
+![post_creation.png](images/post_creation.png)
+
+
+post_creation_with_profanity:
+
+![post_creation_with_profanity.png](images/post_creation_with_profanity.png)
+
+
+comment_creation:
+
+![comment_creation.png](images/comment_creation.png)
+
+
+comment_creation_with_profanity:
+
+![comment_creation_with_profanity.png](images/comment_creation_with_profanity.png)
+
+
+stats:
+
+![stats.png](images/stats.png)
+
+comment_autoreply:
+
+![comment_autoreply.png](images/comment_autoreply.png)
+
+
+delete_post:
+
+![delete_post.png](images/delete_post.png)
 
 
 <details style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px">
@@ -169,10 +208,6 @@ My comment list:
 
 - Add roles
 - More validation
-add change autoresponse
-for vpn:
-- username - vpnbook
-- pass- b6xnvt9
-- run vpn:
-- sudo openvpn vpnbook-us16-tcp443.ovpn
+- use gemini chat
+- mocks in tests
 </details>

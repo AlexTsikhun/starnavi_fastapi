@@ -14,3 +14,8 @@ class Post(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class DeletePostResponse(BaseModel):
+    message: str
+    deleted_post: Post

@@ -30,3 +30,7 @@ class AutoReplyToggleResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateReplyDelayRequest(BaseModel):
+    delay: int
