@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, APIRouter
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from dependencies import get_db
+from core.database import get_db
 from user import oauth2
 from user.crud import toggle_auto_reply
 from user.models import DBUser

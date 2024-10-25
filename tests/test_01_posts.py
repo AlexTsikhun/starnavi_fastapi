@@ -81,7 +81,7 @@ def test_delete_post(client, auth_header):
     post_id = post_response.json()["id"]
     response = delete_post(client, auth_header, post_id)
     assert response.status_code == 200
-    assert response.json()["id"] == post_id
+    assert response.json()["message"] == "Post deleted successfully"
 
 
 def test_delete_post_not_found(client, auth_header):

@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-from database import Base
+from core.database import Base
 from user.models import DBUser
 
 

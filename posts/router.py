@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
-from dependencies import get_db
+from core.database import get_db
 from gemini import profanity_checker
 from posts import schemas
 from posts.crud import create_post, get_posts, get_post, update_post, delete_post
