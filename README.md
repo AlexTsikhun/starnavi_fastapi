@@ -8,8 +8,9 @@ Analytics on the number of comments added to posts over a certain period.
 
 - [Task](#task)
 - [Installation](#installation)
-- [Run with docker](#run-with-docker)
 - [Launch periodic task with Celery](#launch-periodic-task-with-celery)
+- [Run with docker](#run-with-docker)
+- [Run tests](#run-tests)
 - [Getting access](#getting-access)
 - [Technologies Used](#technologies-used)
 - [Features](#features)
@@ -52,14 +53,14 @@ alembic revision --autogenerate -m "Init"
 alembic upgrade head
 python3 -m uvicorn main:app --reload
 ```
+## Launch periodic task with Celery
 
-## Run with docker
-
-Docker should be installed locally
+Celery should be installed locally. Run worker and flower:
 
 ```bash
-docker compose build
-docker compose up
+celery -A celery_app worker --loglevel=info
+
+celery -A celery_app flower --port=5555
 ```
 
 Gemini APi not allowed in Ukraine, so I used VPN. Run OpenVNP:
@@ -70,21 +71,27 @@ sudo openvpn vpnbook-us16-tcp443.ovpn
 # pass- b6xnvt9 
 ```
 
+## Run with docker
+
+Docker should be installed locally
+
+```bash
+docker compose build
+docker compose up
+```
+
+## Run tests
+
+Add path to `.env` files for test configuration
+
+```bash
+pytest tests/
+```
 ## Getting access
 
 - Create user via `api/v1/user/register/`
 - Get access token `api/v1/user/token/`
 - API Root `api/v1/posts/`
-
-## Launch periodic task with Celery
-
-Celery should be installed locally. Run worker and flower:
-
-```bash
-celery -A celery_app worker --loglevel=info
-
-celery -A celery_app flower --port=5555
-```
 
 ## Technologies Used
 
@@ -208,7 +215,8 @@ delete_post:
 <summary style="font-size: 1.17em; font-weight: bold; ">Future work</summary>
 
 - Add roles
-- More validation
+- More validation to creation process
 - use gemini chat
 - mocks in tests
+- respond to a specific message
 </details>
