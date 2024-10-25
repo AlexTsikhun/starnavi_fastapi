@@ -115,7 +115,7 @@ def test_delete_comment(client, auth_header):
 
     response = delete_comment(client, auth_header, comment_id)
     assert response.status_code == 200
-    assert response.json()["id"] == comment_id
+    assert response.json()["message"] == "Comment deleted successfully"
 
 
 def test_delete_comment_not_found(client, auth_header):
