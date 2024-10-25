@@ -14,8 +14,7 @@ from comments.crud import (
 )
 from comments.models import DBComment
 from comments.schemas import CommentAnalytics
-from dependencies import get_db
-from gemini import profanity_checker
+from core.database import get_db
 from user.models import DBUser
 from user.oauth2 import get_current_user
 
