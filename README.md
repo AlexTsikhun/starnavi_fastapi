@@ -103,9 +103,10 @@ pytest tests/
 
 ## Features:
 
-- schedule Comment answer with Celery
-- automatic Comment answer with Gemini API
-- profanity checker with Gemini API
+- schedule Comment answer with Celery (You can set the time for an automatic response)
+- automatic Comment answer with Gemini API (To better maintain the logic of the questions and answers, you can use `model.start_chat`)
+- profanity checker with Gemini API (because profanity-checker library does not work 
+with languages other than English, LLM transformers are too computationally complex for this task)
 - JWT authenticated
 - Documentation is located at `docs`
 - Managing Posts and Comments
