@@ -1,4 +1,5 @@
-from _datetime import datetime, timedelta
+from _datetime import datetime
+from typing import List
 
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
@@ -12,8 +13,7 @@ from comments.crud import (
     delete_comment,
     update_comment,
 )
-from comments.models import DBComment
-from comments.schemas import CommentAnalytics
+from comments.services import get_comments_daily_breakdown
 from core.database import get_db
 from user.models import DBUser
 from user.oauth2 import get_current_user
@@ -85,44 +85,13 @@ def delete_comment_endpoint(comment_id: int, db: Session = Depends(get_db)):
     return {"message": "Comment deleted successfully", "deleted_post": db_comment}
 
 
-@router.get(
-    "/comments-daily-breakdown",
-    dependencies=[Depends(get_current_user)],
-)
+@router.get("/comments-daily-breakdown", response_model=List[schemas.CommentAnalytics])
 def comments_daily_breakdown(
     date_from: str, date_to: str, db: Session = Depends(get_db)
 ):
     start_date = datetime.strptime(date_from, "%d-%m-%Y")
     end_date = datetime.strptime(date_to, "%d-%m-%Y")
 
-    analytics = []
-    current_date = start_date
-    while current_date <= end_date:
-        total_comments = (
-            db.query(DBComment)
-            .filter(
-                DBComment.created_at >= current_date,
-                DBComment.created_at < current_date + timedelta(days=1),
-            )
-            .count()
-        )
-        blocked_comments = (
-            db.query(DBComment)
-            .filter(
-                DBComment.created_at >= current_date,
-                DBComment.created_at < current_date + timedelta(days=1),
-                DBComment.is_blocked == 1,
-            )
-            .count()
-        )
-
-        analytics.append(
-            CommentAnalytics(
-                date=current_date.strftime("%Y-%m-%d"),
-                total_comments=total_comments,
-                blocked_comments=blocked_comments,
-            )
-        )
-        current_date += timedelta(days=1)
+    analytics = get_comments_daily_breakdown(db, start_date, end_date)
 
     return analytics

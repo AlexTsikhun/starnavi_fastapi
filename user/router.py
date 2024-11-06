@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from user import oauth2
-from user.crud import toggle_auto_reply
+from user.services import toggle_auto_reply
 from user.models import DBUser
 from user.oauth2 import get_current_user
 from user import schemas
